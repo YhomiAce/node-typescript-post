@@ -26,35 +26,36 @@ class App {
         this.express.use(cors());
         this.express.use(morgan("dev"));
         this.express.use(express.json());
-        this.express.use(express.urlencoded({extended: false}));
+        this.express.use(express.urlencoded({ extended: false }));
         this.express.use(compression());
     }
 
-    private initialiseControllers(controllers: Controller[]):void {
+    private initialiseControllers(controllers: Controller[]): void {
         controllers.forEach((controller: Controller) => {
-            this.express.use('/api')
+            this.express.use('/api', controller.router)
         });
     }
 
-    private initialiseErrorHandling() : void {
+    private initialiseErrorHandling(): void {
         this.express.use(ErrorMiddleware);
     }
 
-    private initailiseDatabaseConnection (): void {
-        mongoose.connect(process.env.MONGO_URI)
-        // .then(()=>{
-        //     console.log("Database Connected");
-            
-        // }).catch((err) =>{
-        //     console.log(err);
-        //     process.exit(1)
-        // })
+    private initailiseDatabaseConnection(): void {
+        const MONGO_URI = "mongodb://localhost:27017/blog"
+        mongoose.connect(MONGO_URI)
+            .then(() => {
+                console.log("Database Connected");
+
+            }).catch((err) => {
+                console.log(err);
+                process.exit(1)
+            })
     }
 
     public listen(): void {
-        this.express.listen(this.port, ()=>{
+        this.express.listen(this.port, () => {
             console.log(`App Listening on PORT ${this.port}`);
-            
+
         })
     }
 }
